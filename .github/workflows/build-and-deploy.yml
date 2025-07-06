@@ -27,7 +27,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}  # Or use GITHUB_TOKEN if you prefer
       run: |
-        npx semantic-release --branches main --dry-run > semver.txt
+        npx semantic-release --dry-run > semver.txt
         VERSION=$(grep -oP 'Release note for version \K[^ ]+' semver.txt | tail -1)
         echo "VERSION=$VERSION"
         echo "VERSION=$VERSION" >> $GITHUB_ENV
