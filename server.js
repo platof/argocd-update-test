@@ -15,7 +15,7 @@ const server = http.createServer((req, res) => {
         // Handle root endpoint
         res.statusCode = 200;
         res.setHeader('Content-Type', 'text/plain');
-        res.end(`Hello, Worlds!\nHandled by server: ${serverName}`);
+        res.end(`Hello, World!\nHandled by server: ${serverName}`);
     }
 });
 
