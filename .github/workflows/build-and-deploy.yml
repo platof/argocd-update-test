@@ -19,10 +19,15 @@ jobs:
       id: pkg
       run: |
         VERSION=$(jq -r .version package.json)
-        TAG="${VERSION}-sha.${GITHUB_SHA:0:7}"
+        SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-7)
+        TAG="${VERSION}-sha.${SHORT_SHA}"
+        echo "VERSION=$VERSION"
+        echo "TAG=$TAG"
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+        echo "TAG=$TAG" >> $GITHUB_ENV
 
     - name: Build Docker image
-      run: docker build -t platof/argocd-test-app:${TAG} .
+      run: docker build -t platof/argocd-test-app:${{ env.TAG }} .
 
     - name: Login to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
@@ -31,11 +36,11 @@ jobs:
       run: git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git
 
     - name: Push Docker image
-      run: docker push platof/argocd-test-app:${TAG}
+      run: docker push platof/argocd-test-app:${{ env.TAG }}
 
     - name: Update Kustomize manifest
       run: |
-        sed -i "s|image: platof/argocd-test-app:.*|image: platof/argocd-test-app:${TAG}|g" k8s/base/deployment.yaml
+        sed -i "s|image: platof/argocd-test-app:.*|image: platof/argocd-test-app:${{ env.TAG }}|g" k8s/base/deployment.yaml
         git config user.name "GitHub Actions"
         git config user.email "actions@github.com"
         git add k8s/base/deployment.yaml
