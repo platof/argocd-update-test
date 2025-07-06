@@ -11,6 +11,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # Important: ensure full history for semantic-release
 
     - name: Use Node (needed for semantic-release)
       uses: actions/setup-node@v3
@@ -23,9 +25,9 @@ jobs:
     - name: Run semantic-release to determine version
       id: release
       env:
-        GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}  # Or use GITHUB_TOKEN if you prefer
       run: |
-        npx semantic-release --dry-run > semver.txt
+        npx semantic-release --branches main --dry-run > semver.txt
         VERSION=$(grep -oP 'Release note for version \K[^ ]+' semver.txt | tail -1)
         echo "VERSION=$VERSION"
         echo "VERSION=$VERSION" >> $GITHUB_ENV
@@ -45,5 +47,5 @@ jobs:
         git config user.name "GitHub Actions"
         git config user.email "actions@github.com"
         git add k8s/base/deployment.yaml
-        git commit -m "Update image tag to ${{ github.sha }}"
+        git commit -m "Update image tag to $VERSION"
         git push
