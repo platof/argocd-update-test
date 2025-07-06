@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: argocd-test
-        image: platof/argocd-test-app:4.2.1-sha.1a73b3e
+        image: platof/argocd-test-app:4.2.1-sha.ff981e4
         ports:
         - containerPort: 8080
