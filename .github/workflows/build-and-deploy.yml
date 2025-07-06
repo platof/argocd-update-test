@@ -15,18 +15,19 @@ jobs:
     - name: Use Node (needed for semantic-release)
       uses: actions/setup-node@v3
       with:
-        node-version: 16
+        node-version: 18
 
     - name: Install semantic-release
-      run: npm install -g semantic-release @semantic-release/git @semantic-release/changelog @semantic-release/github @semantic-release/exec
-    
+      run: npm install semantic-release @semantic-release/git @semantic-release/changelog @semantic-release/github @semantic-release/exec
+
     - name: Run semantic-release to determine version
       id: release
       env:
         GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
       run: |
-        semantic-release --dry-run > semver.txt
+        npx semantic-release --dry-run > semver.txt
         VERSION=$(grep -oP 'Release note for version \K[^ ]+' semver.txt | tail -1)
+        echo "VERSION=$VERSION"
         echo "VERSION=$VERSION" >> $GITHUB_ENV
 
     - name: Build Docker image
