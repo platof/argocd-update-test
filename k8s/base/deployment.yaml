@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-test
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: argocd-test
+  template:
+    metadata:
+      labels:
+        app: argocd-test
+    spec:
+      containers:
+      - name: argocd-test
+        image: platof/argocd-test-app:v0.01
+        ports:
+        - containerPort: 8080
