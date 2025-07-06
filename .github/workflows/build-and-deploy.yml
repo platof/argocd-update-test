@@ -36,11 +36,6 @@ jobs:
     - name: Push Docker image
       run: docker push platof/argocd-test-app:${{ env.TAG }}
 
-    - name: Set Git remote to use PAT
-      run: | 
-        git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git
-        git remote -v
-
     - name: Update Kustomize manifest
       run: |
         sed -i "s|image: platof/argocd-test-app:.*|image: platof/argocd-test-app:${TAG}|g" k8s/base/deployment.yaml
