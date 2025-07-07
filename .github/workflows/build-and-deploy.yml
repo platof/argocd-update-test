@@ -13,10 +13,10 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Build Docker image
-      run: docker build -t platof/argocd-test-app:${{ github.sha }} .
+      run: docker build -t platof/argocd-test-app:latest
 
     - name: Login to Docker
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
     - name: Push Docker image
-      run: docker push platof/argocd-test-app:${{ github.sha }}
+      run: docker push platof/argocd-test-app:latest
