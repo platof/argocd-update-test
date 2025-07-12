@@ -10,13 +10,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+
+    - name: Extract short SHA
+      id: vars
+      run: echo "SHORT_SHA=sha-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
     - name: Build Docker image
-      run: docker build -t platof/argocd-test-app:latest .
+      run: |
+        docker build -t platof/argocd-test-app:${{ env.SHORT_SHA }} .
 
     - name: Login to Docker
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
     - name: Push Docker image
-      run: docker push platof/argocd-test-app:latest
+      run: |
+        docker push platof/argocd-test-app:${{ env.SHORT_SHA }}
