@@ -4,25 +4,36 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'k8s/base/deployment.yaml'
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GH_PAT }}
+        fetch-depth: 0  # Full history in case you want to tag
 
-    - name: Extract short SHA
-      id: vars
-      run: echo "SHORT_SHA=sha-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+    - name: Extract version from package.json
+      id: pkg
+      run: |
+        VERSION=$(jq -r .version package.json)
+        SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-7)
+        TAG="${VERSION}-sha.${SHORT_SHA}"
+        echo "VERSION=$VERSION"
+        echo "TAG=$TAG"
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+        echo "TAG=$TAG" >> $GITHUB_ENV
 
     - name: Build Docker image
-      run: |
-        docker build -t platof/argocd-test-app:${{ env.SHORT_SHA }} .
+      run: docker build -t platof/argocd-test-app:${{ env.TAG }} .
 
-    - name: Login to Docker
+    - name: Login to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
     - name: Push Docker image
-      run: |
-        docker push platof/argocd-test-app:${{ env.SHORT_SHA }}
+      run: docker push platof/argocd-test-app:${{ env.TAG }}
