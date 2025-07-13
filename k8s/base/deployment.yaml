@@ -13,6 +13,8 @@ spec:
       labels:
         app: argocd-test
     spec:
+      imagePullSecrets:
+      - name: ghcr-creds
       containers:
       - name: argocd-test
         image: ghcr.io/platof/argocd-update-test/argocd-test-app:4.2.2-sha.a2f4919
