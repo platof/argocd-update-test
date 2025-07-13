@@ -1,4 +1,4 @@
 kustomize:
   images:
   - docker.io/platof/argocd-test-app:4.2.2-sha.hfh8e03
-  - ghcr.io/platof/argocd-test-app:4.2.2-sha.ddfd045
+  - ghcr.io/platof/argocd-test-app:4.2.2-sha.e7d8830
