@@ -15,7 +15,7 @@ const server = http.createServer((req, res) => {
         // Handle root endpoint
         res.statusCode = 200;
         res.setHeader('Content-Type', 'text/plain');
-        res.end(`Hello, guys!this is the a test versione to see if argo updater actually works, still testing\nHandled by server: ${serverName}`);
+        res.end(`Hello, guys!thiss is the a test versione to see if argo updater actually works, still testing\nHandled by server: ${serverName}`);
     }
 });
 
