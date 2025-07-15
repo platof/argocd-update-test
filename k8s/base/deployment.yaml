@@ -18,5 +18,6 @@ spec:
       containers:
       - name: argocd-test
         image: ghcr.io/platof/argocd-test-app:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
