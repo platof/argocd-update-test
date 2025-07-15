@@ -1,3 +1,7 @@
 resources:
   - deployment.yaml
   - service.yaml
+
+images:
+  - name: ghcr.io/platof/argocd-test-app
+    newTag: latest
