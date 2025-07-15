@@ -17,7 +17,7 @@ spec:
       - name: ghcr-creds
       containers:
       - name: argocd-test
-        image: ghcr.io/platof/argocd-test-app:latest
+        image: ghcr.io/platof/argocd-test-app
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
