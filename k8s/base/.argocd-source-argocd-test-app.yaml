@@ -1,4 +1,3 @@
 kustomize:
   images:
-  - ghcr.io/platof/argocd-test-app:latest
-  
+  - ghcr.io/platof/argocd-test-app:latest@sha256:0363d75fd4c705c366d9dc11d92c0274a9d85ed64981e4be8a89230f8e9ed5f8
