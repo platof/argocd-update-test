@@ -19,22 +19,28 @@ jobs:
         token: ${{ secrets.GH_PAT }}
         fetch-depth: 0  # Full history in case you want to tags
 
-    - name: Extract version from package.json
-      id: pkg
+    - name: Compute SHA from PR head
+      if: github.event.pull_request.head.sha != ''
       run: |
-        VERSION=$(jq -r .version package.json)
-        SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-7)
-        TAG="${VERSION}-sha.${SHORT_SHA}"
-        echo "VERSION=$VERSION"
-        echo "TAG=$TAG"
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
-        echo "TAG=$TAG" >> $GITHUB_ENV
-        echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
+        echo "HEAD_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+        echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
 
-    - name: Print commit info
+    #- name: Extract version from package.json
+    #  id: pkg
+    #  run: |
+    #    VERSION=$(jq -r .version package.json)
+    #    SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-7)
+    #    TAG="${VERSION}-sha.${SHORT_SHA}"
+    #    echo "VERSION=$VERSION"
+    #    echo "TAG=$TAG"
+    #    echo "VERSION=$VERSION" >> $GITHUB_ENV
+    #    echo "TAG=$TAG" >> $GITHUB_ENV
+    #    echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
+
+    - name: Print PR SHA info
       run: |
         echo "GITHUB_SHA = $GITHUB_SHA"
-        echo "Computed SHORT_SHA = ${GITHUB_SHA::7}"
+        echo "PR head SHA = ${{ github.event.pull_request.head.sha }}"
 
     - name: Build Docker image
       run: docker build -t ghcr.io/platof/argocd-test-app:$SHORT_SHA .
