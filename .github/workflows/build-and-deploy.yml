@@ -7,7 +7,7 @@ on:
     paths-ignore:
       - 'k8s/base/deployment.yaml'
   pull_request:
-    types: [opened, synchronize]
+    types: [opened]
 
 jobs:
   build:
