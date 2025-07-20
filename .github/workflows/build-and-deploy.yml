@@ -6,6 +6,8 @@ on:
       - main
     paths-ignore:
       - 'k8s/base/deployment.yaml'
+  pull_request:
+    types: [opened, synchronize]
 
 jobs:
   build:
@@ -30,10 +32,10 @@ jobs:
         echo "TAG=$TAG" >> $GITHUB_ENV
 
     - name: Build Docker image
-      run: docker build -t ghcr.io/platof/argocd-test-app:latest .
+      run: docker build -t ghcr.io/platof/argocd-test-app:$SHORT_SHA .
 
     - name: Login to Docker Hub
       run: echo "${{ secrets.GH_PAT }}" | docker login ghcr.io -u "${{ secrets.GHCR_USERNAME }}" --password-stdin
 
     - name: Push Docker image
-      run: docker push ghcr.io/platof/argocd-test-app:latest
+      run: docker push ghcr.io/platof/argocd-test-app:$SHORT_SHA
