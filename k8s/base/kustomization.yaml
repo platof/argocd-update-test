@@ -1,6 +1,7 @@
 resources:
   - deployment.yaml
   - service.yaml
+  - sealed-ghcr-creds.yaml
 images:
   - name: ghcr.io/platof/argocd-test-app
     newTag: latest
