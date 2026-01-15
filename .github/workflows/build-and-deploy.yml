@@ -6,34 +6,51 @@ on:
       - main
     paths-ignore:
       - 'k8s/base/deployment.yaml'
+  pull_request:
+    types: [opened, reopened, synchronize]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
       with:
         token: ${{ secrets.GH_PAT }}
-        fetch-depth: 0  # Full history in case you want to tag
+        fetch-depth: 0  # Full history in case you want to tags
 
-    - name: Extract version from package.json
-      id: pkg
+    - name: Compute SHA from PR head
+      if: github.event.pull_request.head.sha != ''
       run: |
-        VERSION=$(jq -r .version package.json)
-        SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-7)
-        TAG="${VERSION}-sha.${SHORT_SHA}"
-        echo "VERSION=$VERSION"
-        echo "TAG=$TAG"
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
-        echo "TAG=$TAG" >> $GITHUB_ENV
+        echo "HEAD_SHA=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+        echo "SHORT_SHA=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_ENV
+
+    #- name: Extract version from package.json
+    #  id: pkg
+    #  run: |
+    #    VERSION=$(jq -r .version package.json)
+    #    SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-7)
+    #    TAG="${VERSION}-sha.${SHORT_SHA}"
+    #    echo "VERSION=$VERSION"
+    #    echo "TAG=$TAG"
+    #    echo "VERSION=$VERSION" >> $GITHUB_ENV
+    #    echo "TAG=$TAG" >> $GITHUB_ENV
+    #    echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
+
+    - name: Print PR SHA info
+      run: |
+        echo "GITHUB_SHA = $GITHUB_SHA"
+        echo "PR head SHA = ${{ github.event.pull_request.head.sha }}"
 
     - name: Build Docker image
-      run: docker build -t ghcr.io/platof/argocd-test-app:latest .
+      run: docker build -t ghcr.io/platof/argocd-test-app:$SHORT_SHA .
+      env:
+        SHORT_SHA: ${{ env.SHORT_SHA }}
 
     - name: Login to Docker Hub
       run: echo "${{ secrets.GH_PAT }}" | docker login ghcr.io -u "${{ secrets.GHCR_USERNAME }}" --password-stdin
 
     - name: Push Docker image
-      run: docker push ghcr.io/platof/argocd-test-app:latest
+      run: docker push ghcr.io/platof/argocd-test-app:$SHORT_SHA
+      env:
+        SHORT_SHA: ${{ env.SHORT_SHA }}
